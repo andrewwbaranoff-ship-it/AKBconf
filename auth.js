@@ -39,7 +39,6 @@ document.getElementById('login-btn').onclick = async () => {
   } else document.getElementById('login-error').innerText = data.error;
 };
 
-// Проверка токена при загрузке
 window.onload = () => {
   const token = localStorage.getItem('akbconf_token');
   const name = localStorage.getItem('akbconf_name');

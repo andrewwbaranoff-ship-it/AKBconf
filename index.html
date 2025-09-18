@@ -4,37 +4,54 @@
 <meta charset="UTF-8">
 <title>AKBconf — Audio Conference</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<div id="auth-container">
-  <h2>Вход / Регистрация</h2>
-  <input id="login" placeholder="Логин">
-  <input id="password" type="password" placeholder="Пароль">
-  <input id="name" placeholder="Имя (только для регистрации)">
-  <button id="btn-login">Войти</button>
-  <button id="btn-register">Регистрация</button>
-  <div id="auth-msg" class="muted"></div>
+
+<div id="auth-modal" class="modal active">
+  <div class="modal-content">
+    <h2>Вход / Регистрация</h2>
+    <input id="login" placeholder="Логин">
+    <input id="password" type="password" placeholder="Пароль">
+    <input id="name" placeholder="Имя (для регистрации)">
+    <div class="modal-buttons">
+      <button id="btn-login"><i class="fas fa-sign-in-alt"></i> Войти</button>
+      <button id="btn-register"><i class="fas fa-user-plus"></i> Регистрация</button>
+    </div>
+    <div id="auth-msg" class="muted"></div>
+  </div>
 </div>
 
 <div id="conference-container" class="hidden">
-  <h2 id="welcome"></h2>
-  <input id="input-room" placeholder="Код комнаты">
-  <button id="btn-create">Создать комнату</button>
-  <button id="btn-join">Войти в комнату</button>
-  <button id="btn-logout">Выйти</button>
+  <div class="header">
+    <h2 id="welcome"></h2>
+    <button id="btn-logout"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+  </div>
+  <div class="room-selection">
+    <input id="input-room" placeholder="Код комнаты">
+    <button id="btn-create"><i class="fas fa-plus"></i> Создать</button>
+    <button id="btn-join"><i class="fas fa-door-open"></i> Войти</button>
+  </div>
 
   <div id="room" class="hidden">
-    <div id="local-status"></div>
-    <button id="btn-mute">Откл. микрофон</button>
-    <button id="btn-screen">Поделиться экраном</button>
-    <div id="participants-list"></div>
-    <div id="remote-audio-list"></div>
+    <div class="controls">
+      <button id="btn-mute"><i class="fas fa-microphone"></i> Микрофон</button>
+      <button id="btn-screen"><i class="fas fa-desktop"></i> Экран</button>
+    </div>
+
+    <div id="participants-list" class="participants"></div>
+    <div id="remote-audio-list" class="audio-list"></div>
     <div id="screen-preview-wrap" class="hidden">
       <video id="screen-preview" autoplay playsinline></video>
     </div>
-    <div id="chat-log"></div>
-    <input id="chat-input" placeholder="Сообщение">
-    <button id="chat-send">Отправить</button>
+
+    <div class="chat">
+      <div id="chat-log"></div>
+      <div class="chat-input">
+        <input id="chat-input" placeholder="Сообщение">
+        <button id="chat-send"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
   </div>
 </div>
 

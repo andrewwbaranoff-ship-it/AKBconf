@@ -1,52 +1,40 @@
-let token = null;
-const API = 'https://ваш-сервер-на-render'; // по умолчанию, админ может поменять
+const API = 'https://akbserver-1.onrender.com';
 
-const loginInput = document.getElementById('login');
-const passwordInput = document.getElementById('password');
-const nameInput = document.getElementById('name');
+const loginEl = document.getElementById('login');
+const passEl = document.getElementById('password');
+const nameEl = document.getElementById('name');
 const btnLogin = document.getElementById('btn-login');
 const btnRegister = document.getElementById('btn-register');
 const msgEl = document.getElementById('auth-msg');
-const authContainer = document.getElementById('auth-container');
+const modal = document.getElementById('auth-modal');
 const confContainer = document.getElementById('conference-container');
 const welcomeEl = document.getElementById('welcome');
+const btnLogout = document.getElementById('btn-logout');
 
-btnRegister.addEventListener('click', async () => {
-  const login = loginInput.value.trim();
-  const password = passwordInput.value.trim();
-  const name = nameInput.value.trim();
-  const res = await fetch(API + '/api/register', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ login, password, name })
-  });
+let token = null;
+
+btnRegister.onclick = async () => {
+  const res = await fetch(API+'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login:loginEl.value,password:passEl.value,name:nameEl.value})});
   const data = await res.json();
   msgEl.textContent = data.ok ? 'Регистрация успешна' : data.error;
-});
+};
 
-btnLogin.addEventListener('click', async () => {
-  const login = loginInput.value.trim();
-  const password = passwordInput.value.trim();
-  const res = await fetch(API + '/api/login', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ login, password })
-  });
+btnLogin.onclick = async () => {
+  const res = await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login:loginEl.value,password:passEl.value})});
   const data = await res.json();
   if(data.ok){
     token = data.token;
-    authContainer.classList.add('hidden');
-    confContainer.classList.remove('hidden');
-    welcomeEl.textContent = `Привет, ${data.name}`;
     localStorage.setItem('akbconf_token', token);
     localStorage.setItem('akbconf_name', data.name);
-  } else {
-    msgEl.textContent = data.error;
-  }
-});
+    modal.classList.remove('active');
+    confContainer.classList.remove('hidden');
+    welcomeEl.textContent = `Привет, ${data.name}`;
+  } else msgEl.textContent = data.error;
+};
 
-document.getElementById('btn-logout').addEventListener('click', () => {
+btnLogout.onclick = () => {
   token = null;
-  localStorage.removeItem('akbconf_token');
-  localStorage.removeItem('akbconf_name');
+  localStorage.clear();
   confContainer.classList.add('hidden');
-  authContainer.classList.remove('hidden');
-});
+  modal.classList.add('active');
+};

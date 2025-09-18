@@ -1,4 +1,3 @@
-/* Основной стиль */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #f5f5f7;
@@ -10,7 +9,7 @@ body {
 .hidden { display: none; }
 .error { color: #ff3b30; }
 
-#auth-container, #conference-container {
+#auth-container, #dashboard-container {
   max-width: 600px;
   margin: 30px auto;
   padding: 20px;
@@ -19,7 +18,7 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-input, button {
+input, button, select {
   width: 100%;
   margin: 8px 0;
   padding: 12px;
@@ -38,23 +37,65 @@ button {
 
 button:hover { background: #005bb5; }
 
-#controls, #audio-controls {
+#dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rooms-list {
+  margin-top: 10px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-body {
   display: flex;
   flex-wrap: wrap;
+  margin-top: 10px;
   gap: 10px;
 }
 
 #participants-container {
-  margin-top: 15px;
-  border-top: 1px solid #d1d1d6;
-  padding-top: 10px;
+  flex: 1 1 150px;
+  min-width: 150px;
+  max-width: 200px;
+  background: #f2f2f7;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 #streams-container {
+  flex: 3 1 300px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 10px;
 }
 
 video, audio {
@@ -64,8 +105,9 @@ video, audio {
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-#chat {
-  margin-top: 15px;
+#chat-container {
+  width: 100%;
+  margin-top: 10px;
 }
 
 #chat-log {
@@ -76,8 +118,9 @@ video, audio {
   border-radius: 10px;
 }
 
-#top-bar {
+.room-controls {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }

@@ -30,31 +30,31 @@
 
 <div id="dashboard-container" class="hidden">
   <div id="dashboard-header">
-    <h2>Мои комнаты</h2>
-    <button id="create-room-btn">Создать комнату</button>
+    <h2>Чаты</h2>
+    <button id="create-chat-btn">Создать чат</button>
   </div>
-  <div id="rooms-list"></div>
+  <div id="chats-list"></div>
 </div>
 
-<!-- Модальное окно создания комнаты -->
-<div id="create-room-modal" class="modal hidden">
+<!-- Модальное окно создания чата -->
+<div id="create-chat-modal" class="modal hidden">
   <div class="modal-content">
-    <h3>Создать комнату</h3>
-    <input type="text" id="room-name-input" placeholder="Название комнаты">
-    <button id="confirm-create-room-btn">Создать</button>
-    <button id="cancel-create-room-btn">Отмена</button>
+    <h3>Создать чат</h3>
+    <input type="text" id="chat-name-input" placeholder="Название чата">
+    <button id="confirm-create-chat-btn">Создать</button>
+    <button id="cancel-create-chat-btn">Отмена</button>
   </div>
 </div>
 
-<!-- Модальное окно комнаты -->
-<div id="room-modal" class="modal hidden">
-  <div class="room-header">
-    <h2 id="room-title"></h2>
-    <button id="end-room-btn">Завершить комнату</button>
+<!-- Модальное окно чата -->
+<div id="chat-modal" class="modal hidden">
+  <div class="chat-header">
+    <h2 id="chat-title"></h2>
+    <button id="end-chat-btn">Завершить чат</button>
     <button id="share-link-btn">Поделиться ссылкой</button>
   </div>
 
-  <div class="room-body">
+  <div class="chat-body">
     <div id="participants-container">
       <h3>Участники</h3>
       <div id="participants"></div>
@@ -70,7 +70,7 @@
     </div>
   </div>
 
-  <div class="room-controls">
+  <div class="chat-controls">
     <button id="toggle-mic-btn">Микрофон</button>
     <button id="share-screen-btn">Демонстрация экрана</button>
     <select id="audio-output-select"></select>

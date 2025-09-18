@@ -1,7 +1,8 @@
-// Минимальный пример генерации QR-кода (использует QRCode.js библиотеку)
+// QR-код генерация
 function generateQRCode(roomCode) {
-  const qrContainer = document.getElementById('qr-code');
-  if(!qrContainer) return;
-  qrContainer.innerHTML = '';
-  new QRCode(qrContainer, `${window.location.origin}?room=${roomCode}`);
+  const container = document.getElementById('qr-container');
+  container.innerHTML = '';
+  const qr = document.createElement('div');
+  container.appendChild(qr);
+  new QRCode(qr, `${window.location.origin}?room=${roomCode}`);
 }

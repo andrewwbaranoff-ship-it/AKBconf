@@ -43,7 +43,7 @@ button:hover { background: #005bb5; }
   align-items: center;
 }
 
-.rooms-list {
+.chats-list {
   margin-top: 10px;
 }
 
@@ -69,13 +69,13 @@ button:hover { background: #005bb5; }
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.room-header {
+.chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.room-body {
+.chat-body {
   display: flex;
   flex-wrap: wrap;
   margin-top: 10px;
@@ -118,7 +118,7 @@ video, audio {
   border-radius: 10px;
 }
 
-.room-controls {
+.chat-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;

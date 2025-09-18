@@ -1,46 +1,60 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AKBconf</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKBconf</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="auth-container">
-    <h1>AKBconf</h1>
-    <div id="login-form">
-      <h2>Вход</h2>
-      <input type="text" id="login-login" placeholder="Логин">
-      <input type="password" id="login-password" placeholder="Пароль">
-      <button id="login-btn">Войти</button>
-      <p id="login-error" class="error"></p>
-      <p>Нет аккаунта? <span id="show-register">Зарегистрироваться</span></p>
-    </div>
-    <div id="register-form" class="hidden">
-      <h2>Регистрация</h2>
-      <input type="text" id="register-name" placeholder="Имя">
-      <input type="text" id="register-login" placeholder="Логин">
-      <input type="password" id="register-password" placeholder="Пароль">
-      <button id="register-btn">Зарегистрироваться</button>
-      <p id="register-error" class="error"></p>
-      <p>Уже есть аккаунт? <span id="show-login">Войти</span></p>
-    </div>
+<div id="auth-container">
+  <h1>AKBconf</h1>
+  <div id="login-form">
+    <h2>Вход</h2>
+    <input type="text" id="login-login" placeholder="Логин">
+    <input type="password" id="login-password" placeholder="Пароль">
+    <button id="login-btn">Войти</button>
+    <p id="login-error" class="error"></p>
+    <p>Нет аккаунта? <span id="show-register">Зарегистрироваться</span></p>
+  </div>
+  <div id="register-form" class="hidden">
+    <h2>Регистрация</h2>
+    <input type="text" id="register-name" placeholder="Имя">
+    <input type="text" id="register-login" placeholder="Логин">
+    <input type="password" id="register-password" placeholder="Пароль">
+    <button id="register-btn">Зарегистрироваться</button>
+    <p id="register-error" class="error"></p>
+    <p>Уже есть аккаунт? <span id="show-login">Войти</span></p>
+  </div>
+</div>
+
+<div id="dashboard-container" class="hidden">
+  <div id="dashboard-header">
+    <h2>Мои комнаты</h2>
+    <button id="create-room-btn">Создать комнату</button>
+  </div>
+  <div id="rooms-list"></div>
+</div>
+
+<!-- Модальное окно создания комнаты -->
+<div id="create-room-modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Создать комнату</h3>
+    <input type="text" id="room-name-input" placeholder="Название комнаты">
+    <button id="confirm-create-room-btn">Создать</button>
+    <button id="cancel-create-room-btn">Отмена</button>
+  </div>
+</div>
+
+<!-- Модальное окно комнаты -->
+<div id="room-modal" class="modal hidden">
+  <div class="room-header">
+    <h2 id="room-title"></h2>
+    <button id="end-room-btn">Завершить комнату</button>
+    <button id="share-link-btn">Поделиться ссылкой</button>
   </div>
 
-  <div id="conference-container" class="hidden">
-    <div id="top-bar">
-      <h2 id="room-title"></h2>
-      <button id="leave-room-btn">Выйти</button>
-    </div>
-
-    <div id="controls">
-      <input type="text" id="room-code-input" placeholder="Код комнаты">
-      <button id="create-room-btn">Создать</button>
-      <button id="join-room-btn">Присоединиться</button>
-      <button id="copy-link-btn">Скопировать ссылку</button>
-    </div>
-
+  <div class="room-body">
     <div id="participants-container">
       <h3>Участники</h3>
       <div id="participants"></div>
@@ -48,24 +62,26 @@
 
     <div id="streams-container"></div>
 
-    <div id="chat">
+    <div id="chat-container">
       <div id="chat-log"></div>
       <input type="text" id="chat-input" placeholder="Сообщение">
       <input type="file" id="chat-file-input">
       <button id="send-chat-btn">Отправить</button>
     </div>
-
-    <div id="audio-controls">
-      <button id="toggle-mic-btn">Микрофон</button>
-      <button id="share-screen-btn">Демонстрация экрана</button>
-    </div>
-
-    <div id="qr-container"></div>
   </div>
 
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script src="qr.js"></script>
-  <script src="auth.js"></script>
-  <script src="client.js"></script>
+  <div class="room-controls">
+    <button id="toggle-mic-btn">Микрофон</button>
+    <button id="share-screen-btn">Демонстрация экрана</button>
+    <select id="audio-output-select"></select>
+  </div>
+
+  <div id="qr-container"></div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="qr.js"></script>
+<script src="auth.js"></script>
+<script src="client.js"></script>
 </body>
 </html>

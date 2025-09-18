@@ -1,24 +1,52 @@
-body { font-family: 'Segoe UI', sans-serif; background:#1e1e1e; color:#fff; margin:0; }
-.hidden { display:none; }
-.modal { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:0.3s; }
-.modal.active { opacity:1; pointer-events:all; }
-.modal-content { background:#2a2a2a; padding:30px; border-radius:10px; width:300px; text-align:center; }
-.modal input { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:none; }
-.modal-buttons button { padding:10px 15px; margin:5px; border:none; border-radius:5px; background:#4CAF50; color:#fff; cursor:pointer; }
-.modal-buttons button:hover { background:#45a049; }
-.muted { color:#f88; margin-top:10px; }
-#conference-container { max-width:700px; margin:20px auto; padding:20px; background:#2a2a2a; border-radius:10px; }
-.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.header button { background:#e74c3c; padding:8px 15px; border:none; border-radius:5px; color:#fff; cursor:pointer; }
-.room-selection { display:flex; gap:5px; margin-bottom:10px; }
-.room-selection input { flex:1; padding:8px; border-radius:5px; border:none; }
-.controls { display:flex; gap:10px; margin-bottom:10px; }
-.controls button { flex:1; background:#3498db; border:none; border-radius:5px; padding:10px; color:#fff; cursor:pointer; }
-.controls button:hover { background:#2980b9; }
-.participants { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
-.participant { background:#3a3a3a; padding:5px 10px; border-radius:5px; display:flex; align-items:center; gap:5px; }
-.chat { display:flex; flex-direction:column; gap:5px; }
-#chat-log { max-height:150px; overflow-y:auto; border:1px solid #555; padding:5px; border-radius:5px; }
-.chat-input { display:flex; gap:5px; }
-.chat-input input { flex:1; padding:8px; border-radius:5px; border:none; }
-.chat-input button { background:#1abc9c; border:none; border-radius:5px; padding:8px; color:#fff; cursor:pointer; }
+body {
+  font-family: Arial, sans-serif;
+  background: #1e1e2f;
+  color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+.hidden { display: none; }
+.error { color: #ff4c4c; }
+
+#auth-container, #conference-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #2b2b3a;
+  border-radius: 10px;
+}
+
+input, button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  background: #4c6ef5;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover { background: #3b56d1; }
+
+#controls, #audio-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+#chat {
+  margin-top: 20px;
+}
+
+#chat-log {
+  background: #1b1b2b;
+  height: 150px;
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 5px;
+}

@@ -1,62 +1,56 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>AKBconf — Audio Conference</title>
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AKBconf</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div id="auth-modal" class="modal active">
-  <div class="modal-content">
-    <h2>Вход / Регистрация</h2>
-    <input id="login" placeholder="Логин">
-    <input id="password" type="password" placeholder="Пароль">
-    <input id="name" placeholder="Имя (для регистрации)">
-    <div class="modal-buttons">
-      <button id="btn-login"><i class="fas fa-sign-in-alt"></i> Войти</button>
-      <button id="btn-register"><i class="fas fa-user-plus"></i> Регистрация</button>
+  <div id="auth-container">
+    <h1>AKBconf</h1>
+    <div id="login-form">
+      <h2>Вход</h2>
+      <input type="text" id="login-login" placeholder="Логин">
+      <input type="password" id="login-password" placeholder="Пароль">
+      <button id="login-btn">Войти</button>
+      <p id="login-error" class="error"></p>
+      <p>Нет аккаунта? <span id="show-register">Зарегистрироваться</span></p>
     </div>
-    <div id="auth-msg" class="muted"></div>
-  </div>
-</div>
-
-<div id="conference-container" class="hidden">
-  <div class="header">
-    <h2 id="welcome"></h2>
-    <button id="btn-logout"><i class="fas fa-sign-out-alt"></i> Выйти</button>
-  </div>
-  <div class="room-selection">
-    <input id="input-room" placeholder="Код комнаты">
-    <button id="btn-create"><i class="fas fa-plus"></i> Создать</button>
-    <button id="btn-join"><i class="fas fa-door-open"></i> Войти</button>
+    <div id="register-form" class="hidden">
+      <h2>Регистрация</h2>
+      <input type="text" id="register-name" placeholder="Имя">
+      <input type="text" id="register-login" placeholder="Логин">
+      <input type="password" id="register-password" placeholder="Пароль">
+      <button id="register-btn">Зарегистрироваться</button>
+      <p id="register-error" class="error"></p>
+      <p>Уже есть аккаунт? <span id="show-login">Войти</span></p>
+    </div>
   </div>
 
-  <div id="room" class="hidden">
-    <div class="controls">
-      <button id="btn-mute"><i class="fas fa-microphone"></i> Микрофон</button>
-      <button id="btn-screen"><i class="fas fa-desktop"></i> Экран</button>
+  <div id="conference-container" class="hidden">
+    <h2 id="room-title"></h2>
+    <div id="controls">
+      <button id="create-room-btn">Создать конференцию</button>
+      <input type="text" id="room-code-input" placeholder="Код комнаты">
+      <button id="join-room-btn">Присоединиться</button>
+      <button id="copy-link-btn">Скопировать ссылку</button>
     </div>
-
-    <div id="participants-list" class="participants"></div>
-    <div id="remote-audio-list" class="audio-list"></div>
-    <div id="screen-preview-wrap" class="hidden">
-      <video id="screen-preview" autoplay playsinline></video>
-    </div>
-
-    <div class="chat">
+    <div id="participants"></div>
+    <div id="chat">
       <div id="chat-log"></div>
-      <div class="chat-input">
-        <input id="chat-input" placeholder="Сообщение">
-        <button id="chat-send"><i class="fas fa-paper-plane"></i></button>
-      </div>
+      <input type="text" id="chat-input" placeholder="Сообщение">
+      <button id="send-chat-btn">Отправить</button>
+    </div>
+    <div id="audio-controls">
+      <button id="toggle-mic-btn">Вкл/Выкл микрофон</button>
+      <button id="share-screen-btn">Демонстрация экрана (только десктоп)</button>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="auth.js"></script>
-<script src="client.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="qr.js"></script>
+  <script src="auth.js"></script>
+  <script src="client.js"></script>
 </body>
 </html>

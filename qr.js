@@ -1,8 +1,11 @@
-// QR-код генерация
-function generateQRCode(roomCode) {
-  const container = document.getElementById('qr-container');
-  container.innerHTML = '';
-  const qr = document.createElement('div');
-  container.appendChild(qr);
-  new QRCode(qr, `${window.location.origin}?room=${roomCode}`);
+function generateQR(text) {
+  const qrContainer = document.getElementById('qr-container');
+  qrContainer.innerHTML = '';
+  new QRCode(qrContainer, text);
 }
+document.getElementById('share-link-btn').onclick = () => {
+  const link = window.location.href + '?chat=' + currentChatCode;
+  navigator.clipboard.writeText(link);
+  generateQR(link);
+  alert('Ссылка скопирована!');
+};

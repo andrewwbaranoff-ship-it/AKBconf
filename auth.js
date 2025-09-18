@@ -55,42 +55,36 @@ window.onload = () => {
 function showDashboard(name) {
   document.getElementById('auth-container').classList.add('hidden');
   dashboard.classList.remove('hidden');
-  loadRooms();
+  loadChats();
 }
 
-function loadRooms() {
-  const roomsList = document.getElementById('rooms-list');
-  roomsList.innerHTML = '';
-  const savedRooms = JSON.parse(localStorage.getItem('akbconf_rooms') || '[]');
-  savedRooms.forEach(room => {
+function loadChats() {
+  const chatsList = document.getElementById('chats-list');
+  chatsList.innerHTML = '';
+  const savedChats = JSON.parse(localStorage.getItem('akbconf_chats') || '[]');
+  savedChats.forEach(chat => {
     const div = document.createElement('div');
-    div.classList.add('room-item');
-    div.innerText = room.name;
-    div.onclick = () => openRoom(room.code, room.name);
-    roomsList.appendChild(div);
+    div.classList.add('chat-item');
+    div.innerText = chat.name;
+    div.onclick = () => openChat(chat.code, chat.name);
+    chatsList.appendChild(div);
   });
 }
 
 // Модальные окна
-document.getElementById('create-room-btn').onclick = () => {
-  document.getElementById('create-room-modal').classList.remove('hidden');
+document.getElementById('create-chat-btn').onclick = () => {
+  document.getElementById('create-chat-modal').classList.remove('hidden');
 };
-document.getElementById('cancel-create-room-btn').onclick = () => {
-  document.getElementById('create-room-modal').classList.add('hidden');
+document.getElementById('cancel-create-chat-btn').onclick = () => {
+  document.getElementById('create-chat-modal').classList.add('hidden');
 };
-document.getElementById('confirm-create-room-btn').onclick = () => {
-  const name = document.getElementById('room-name-input').value.trim();
-  if(!name) return alert('Введите название комнаты');
-  const code = Math.random().toString(36).substr(2,6).toUpperCase();
-  const savedRooms = JSON.parse(localStorage.getItem('akbconf_rooms') || '[]');
-  savedRooms.push({name, code});
-  localStorage.setItem('akbconf_rooms', JSON.stringify(savedRooms));
-  document.getElementById('create-room-modal').classList.add('hidden');
-  openRoom(code, name);
+document.getElementById('confirm-create-chat-btn').onclick = () => {
+  const name = document.getElementById('chat-name-input').value;
+  const code = 'chat-' + Date.now();
+  const savedChats = JSON.parse(localStorage.getItem('akbconf_chats') || '[]');
+  savedChats.push({name, code});
+  localStorage.setItem('akbconf_chats', JSON.stringify(savedChats));
+  document.getElementById('create-chat-modal').classList.add('hidden');
+  loadChats();
+  openChat(code, name);
 };
-
-function openRoom(code, name) {
-  document.getElementById('room-modal').classList.remove('hidden');
-  document.getElementById('room-title').innerText = name;
-  initRoom(code, name);
-}

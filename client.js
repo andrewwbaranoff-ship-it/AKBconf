@@ -1,127 +1,80 @@
 const socket = io('https://akbserver-1.onrender.com');
-let localStream;
+let localStream = null;
 let peers = {};
-let currentRoom = null;
-const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+let currentChatCode = null;
 
-// ===== Инициализация микрофона =====
-async function initAudio() {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  } catch(e) {
-    alert('Не удалось получить микрофон');
-  }
+// Открытие чата
+function openChat(code, name) {
+  currentChatCode = code;
+  document.getElementById('chat-title').innerText = name;
+  document.getElementById('chat-modal').classList.remove('hidden');
+  joinRoom(code);
 }
-initAudio();
 
-// ===== Кнопки микрофон и демонстрация экрана =====
-document.getElementById('toggle-mic-btn').onclick = () => {
-  if(localStream) {
-    const track = localStream.getAudioTracks()[0];
-    track.enabled = !track.enabled;
-    document.getElementById('toggle-mic-btn').innerText = track.enabled ? 'Микрофон Вкл' : 'Микрофон Выкл';
-  }
-};
-
-document.getElementById('share-screen-btn').onclick = async () => {
-  if(isMobile) return alert('Демонстрация экрана доступна только на ПК');
-  try {
-    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-    addStream(screenStream, 'Экран');
-    // TODO: отправка через WebRTC другим участникам
-  } catch(e) { console.error(e); }
-};
-
-// ===== Инициализация комнаты =====
-function initRoom(code, name) {
-  currentRoom = code;
-  socket.emit('join-room', { roomCode: code, displayName: localStorage.getItem('akbconf_name') }, res => {
-    if(!res.ok) return alert(res.error);
-    document.getElementById('participants').innerHTML = '';
-    res.participants.forEach(p => addParticipant(p));
-    generateQRCode(code);
+async function joinRoom(code) {
+  const displayName = localStorage.getItem('akbconf_name');
+  localStream = await navigator.mediaDevices.getUserMedia({audio:true});
+  socket.emit('join-room', {roomCode: code, displayName}, ({ok, participants}) => {
+    participants.forEach(p => { if(p.id !== socket.id) createPeer(p.id); });
   });
 }
 
-// ===== Участники =====
-function addParticipant({id, displayName}) {
-  const container = document.getElementById('participants');
-  const div = document.createElement('div');
-  div.classList.add('participant-item');
-  div.innerText = displayName;
-  container.appendChild(div);
+// Создание PeerConnection
+function createPeer(peerId) {
+  const pc = new RTCPeerConnection();
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  pc.ontrack = event => {
+    const audioEl = document.createElement('audio');
+    audioEl.srcObject = event.streams[0];
+    audioEl.autoplay = true;
+    document.getElementById('streams-container').appendChild(audioEl);
+  };
+  pc.onicecandidate = e => {
+    if(e.candidate) socket.emit('signal', {to: peerId, signal:e.candidate});
+  };
+  peers[peerId] = pc;
 }
 
-// ===== Потоки участников =====
-function addStream(stream, label) {
-  const container = document.getElementById('streams-container');
-  const videoEl = document.createElement('video');
-  videoEl.srcObject = stream;
-  videoEl.autoplay = true;
-  videoEl.playsInline = true;
-  videoEl.controls = false;
-  const wrapper = document.createElement('div');
-  const lbl = document.createElement('div');
-  lbl.innerText = label;
-  wrapper.appendChild(lbl);
-  wrapper.appendChild(videoEl);
-  container.appendChild(wrapper);
-}
-
-// ===== Чат =====
-document.getElementById('send-chat-btn').onclick = () => {
-  const input = document.getElementById('chat-input');
-  const fileInput = document.getElementById('chat-file-input');
-  if(fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit('chat-message', {
-        roomCode: currentRoom,
-        text: reader.result,
-        type: 'file',
-        fromName: localStorage.getItem('akbconf_name')
-      });
-    };
-    reader.readAsDataURL(file);
-    fileInput.value = '';
-  } else if(input.value.trim() !== '') {
-    socket.emit('chat-message', {
-      roomCode: currentRoom,
-      text: input.value,
-      type: 'text',
-      fromName: localStorage.getItem('akbconf_name')
-    });
-    input.value = '';
-  }
-};
-
-socket.on('chat-message', data => {
-  const log = document.getElementById('chat-log');
-  const msgEl = document.createElement('div');
-  if(data.type === 'file') {
-    const link = document.createElement('a');
-    link.href = data.text;
-    link.target = '_blank';
-    link.innerText = `Файл от ${data.fromName}`;
-    msgEl.appendChild(link);
-  } else msgEl.innerText = `${data.fromName}: ${data.text}`;
-  log.appendChild(msgEl);
-  log.scrollTop = log.scrollHeight;
+// Приём сигналинга
+socket.on('signal', async data => {
+  let pc = peers[data.from];
+  if(!pc) { createPeer(data.from); pc = peers[data.from]; }
+  if(data.signal.candidate) await pc.addIceCandidate(data.signal);
+  else if(data.signal.sdp) await pc.setRemoteDescription(new RTCSessionDescription(data.signal.sdp));
 });
 
-// ===== Поделиться ссылкой =====
-document.getElementById('share-link-btn').onclick = () => {
-  const link = `${window.location.origin}?room=${currentRoom}`;
-  prompt('Скопируйте ссылку для приглашения', link);
-  generateQRCode(currentRoom);
+// Чат
+document.getElementById('send-chat-btn').onclick = () => {
+  const text = document.getElementById('chat-input').value;
+  if(!text) return;
+  const data = {roomCode: currentChatCode, text, type:'text', fromName: localStorage.getItem('akbconf_name')};
+  socket.emit('chat-message', data);
+  addChatMessage(data);
+  document.getElementById('chat-input').value = '';
 };
 
-// ===== Завершить комнату =====
-document.getElementById('end-room-btn').onclick = () => {
-  document.getElementById('room-modal').classList.add('hidden');
-  const rooms = JSON.parse(localStorage.getItem('akbconf_rooms') || '[]');
-  localStorage.setItem('akbconf_rooms', JSON.stringify(rooms.filter(r => r.code !== currentRoom)));
-  currentRoom = null;
-  loadRooms();
+socket.on('chat-message', data => addChatMessage(data));
+
+function addChatMessage(data) {
+  const log = document.getElementById('chat-log');
+  const div = document.createElement('div');
+  div.innerText = `${data.fromName}: ${data.text}`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+// Управление микрофоном
+let micEnabled = true;
+document.getElementById('toggle-mic-btn').onclick = () => {
+  localStream.getAudioTracks()[0].enabled = !micEnabled;
+  micEnabled = !micEnabled;
+};
+
+// Демонстрация экрана
+document.getElementById('share-screen-btn').onclick = async () => {
+  const screenStream = await navigator.mediaDevices.getDisplayMedia({video:true});
+  Object.values(peers).forEach(pc => {
+    screenStream.getTracks().forEach(track => pc.addTrack(track, screenStream));
+  });
+  screenStream.getVideoTracks()[0].onended = () => { console.log('Screen sharing ended'); };
 };

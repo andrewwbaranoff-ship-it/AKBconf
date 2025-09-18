@@ -16,7 +16,11 @@ initAudio();
 
 // ===== Кнопки микрофон и демонстрация экрана =====
 document.getElementById('toggle-mic-btn').onclick = () => {
-  if(localStream) localStream.getAudioTracks()[0].enabled = !localStream.getAudioTracks()[0].enabled;
+  if(localStream) {
+    const track = localStream.getAudioTracks()[0];
+    track.enabled = !track.enabled;
+    document.getElementById('toggle-mic-btn').innerText = track.enabled ? 'Микрофон Вкл' : 'Микрофон Выкл';
+  }
 };
 
 document.getElementById('share-screen-btn').onclick = async () => {
@@ -24,36 +28,45 @@ document.getElementById('share-screen-btn').onclick = async () => {
   try {
     const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
     addStream(screenStream, 'Экран');
-    // Отправляем всем участникам через WebRTC (понадобится PeerConnection для каждого)
+    // TODO: отправка через WebRTC другим участникам
   } catch(e) { console.error(e); }
 };
 
-// ===== Комнаты =====
-document.getElementById('create-room-btn').onclick = async () => {
-  const roomCode = Math.random().toString(36).substr(2,6).toUpperCase();
-  currentRoom = roomCode;
-  socket.emit('create-room', { roomCode, title: `Комната ${roomCode}` }, res => {
-    if(res.ok) alert(`Комната создана: ${roomCode}`);
-    generateQRCode(roomCode);
+// ===== Инициализация комнаты =====
+function initRoom(code, name) {
+  currentRoom = code;
+  socket.emit('join-room', { roomCode: code, displayName: localStorage.getItem('akbconf_name') }, res => {
+    if(!res.ok) return alert(res.error);
+    document.getElementById('participants').innerHTML = '';
+    res.participants.forEach(p => addParticipant(p));
+    generateQRCode(code);
   });
-};
+}
 
-document.getElementById('join-room-btn').onclick = () => {
-  const roomCode = document.getElementById('room-code-input').value.toUpperCase();
-  if(!roomCode) return alert('Введите код комнаты');
-  currentRoom = roomCode;
-  socket.emit('join-room', { roomCode, displayName: localStorage.getItem('akbconf_name') }, res => {
-    if(res.ok) alert(`Вы присоединились к комнате ${roomCode}`);
-    generateQRCode(roomCode);
-  });
-};
+// ===== Участники =====
+function addParticipant({id, displayName}) {
+  const container = document.getElementById('participants');
+  const div = document.createElement('div');
+  div.classList.add('participant-item');
+  div.innerText = displayName;
+  container.appendChild(div);
+}
 
-// ===== Скопировать ссылку =====
-document.getElementById('copy-link-btn').onclick = () => {
-  const link = `${window.location.origin}?room=${currentRoom}`;
-  navigator.clipboard.writeText(link);
-  alert('Ссылка скопирована!');
-};
+// ===== Потоки участников =====
+function addStream(stream, label) {
+  const container = document.getElementById('streams-container');
+  const videoEl = document.createElement('video');
+  videoEl.srcObject = stream;
+  videoEl.autoplay = true;
+  videoEl.playsInline = true;
+  videoEl.controls = false;
+  const wrapper = document.createElement('div');
+  const lbl = document.createElement('div');
+  lbl.innerText = label;
+  wrapper.appendChild(lbl);
+  wrapper.appendChild(videoEl);
+  container.appendChild(wrapper);
+}
 
 // ===== Чат =====
 document.getElementById('send-chat-btn').onclick = () => {
@@ -83,36 +96,32 @@ document.getElementById('send-chat-btn').onclick = () => {
   }
 };
 
-// ===== Получение сообщений =====
 socket.on('chat-message', data => {
   const log = document.getElementById('chat-log');
-  let msgEl = document.createElement('div');
-  msgEl.classList.add('chat-message');
+  const msgEl = document.createElement('div');
   if(data.type === 'file') {
     const link = document.createElement('a');
     link.href = data.text;
     link.target = '_blank';
     link.innerText = `Файл от ${data.fromName}`;
     msgEl.appendChild(link);
-  } else {
-    msgEl.innerText = `${data.fromName}: ${data.text}`;
-  }
+  } else msgEl.innerText = `${data.fromName}: ${data.text}`;
   log.appendChild(msgEl);
   log.scrollTop = log.scrollHeight;
 });
 
-// ===== Потоки участников =====
-function addStream(stream, label) {
-  const container = document.getElementById('streams-container');
-  const videoEl = document.createElement('video');
-  videoEl.srcObject = stream;
-  videoEl.autoplay = true;
-  videoEl.playsInline = true;
-  videoEl.controls = false;
-  const wrapper = document.createElement('div');
-  const lbl = document.createElement('div');
-  lbl.innerText = label;
-  wrapper.appendChild(lbl);
-  wrapper.appendChild(videoEl);
-  container.appendChild(wrapper);
-}
+// ===== Поделиться ссылкой =====
+document.getElementById('share-link-btn').onclick = () => {
+  const link = `${window.location.origin}?room=${currentRoom}`;
+  prompt('Скопируйте ссылку для приглашения', link);
+  generateQRCode(currentRoom);
+};
+
+// ===== Завершить комнату =====
+document.getElementById('end-room-btn').onclick = () => {
+  document.getElementById('room-modal').classList.add('hidden');
+  const rooms = JSON.parse(localStorage.getItem('akbconf_rooms') || '[]');
+  localStorage.setItem('akbconf_rooms', JSON.stringify(rooms.filter(r => r.code !== currentRoom)));
+  currentRoom = null;
+  loadRooms();
+};
